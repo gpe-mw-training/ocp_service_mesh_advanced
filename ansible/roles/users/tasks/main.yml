@@ -1,0 +1,6 @@
+---
+
+- name: "Set all users with view access to {{ istio_operator_namespace }}"
+  shell: |
+    oc adm policy add-role-to-user view {{ item }} -n {{ istio_operator_namespace }}
+  loop: "{{ range(start_id|int, end_id|int + 1, 1)|list }}"

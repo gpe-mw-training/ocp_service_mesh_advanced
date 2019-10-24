@@ -1,0 +1,4 @@
+istio_operator_namespace: istio-operator
+
+start_id: 1
+end_id: 20
