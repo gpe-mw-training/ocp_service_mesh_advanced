@@ -1,6 +1,7 @@
 ---
 
-- name: "Set all users with view access to {{ istio_operator_namespace }}"
+- name: "Set all users with view access to various namespaces to include {{ istio_operator_namespace }}"
   shell: |
-    oc adm policy add-role-to-user view {{ item }} -n {{ istio_operator_namespace }}
+    oc adm policy add-role-to-user view user{{ item }} -n {{ istio_operator_namespace }}
+    oc adm policy add-role-to-user view user{{ item }} -n openshift-console
   loop: "{{ range(start_id|int, end_id|int + 1, 1)|list }}"
