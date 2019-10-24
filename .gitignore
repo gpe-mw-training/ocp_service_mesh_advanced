@@ -1,0 +1,16 @@
+*.*
+.*
+Downloads
+provisioning_output
+bin
+lab
+ssl_ca/
+!*.txt
+!.bashrc
+!.vimrc
+!.gitconfig
+!.gitignore
+!.gnupg
+!.rhtoken.json
+!.calcurse
+!.m2/settings.xml
