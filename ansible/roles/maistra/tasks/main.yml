@@ -1,0 +1,18 @@
+---
+
+- name: "Create {{ istio_operator_namespace }} namespace"
+  shell: |
+    oc adm new-project {{ istio_operator_namespace }} --display-name="Service Mesh Operator"
+
+- name: "Install istio operator in {{ istio_operator_namespace }}"
+  shell: |
+    oc apply -n {{ istio_operator_namespace }} -f {{ istio_operator_resource_url }}
+
+# TO-DO:  Wait until operator completed
+
+- name: "Install maistra control_plane for each admin"
+  shell: |
+    oc adm new-project admin{{ item }}-istio-system --display-name="Service Mesh System" --admin=admin{{ item }}
+    oc apply -f resources/maistra/service-mesh-control-plane.yml -n admin{{ item }}-istio-system
+#   TO-DO: Wait until control plane completed
+  loop: "{{ range(start_id|int, end_id|int + 1, 1)|list }}"
