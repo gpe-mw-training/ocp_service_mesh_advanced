@@ -12,7 +12,7 @@
 
 - name: "Install maistra control_plane for each admin"
   shell: |
-    oc adm new-project admin{{ item }}-istio-system --display-name="Service Mesh System" --admin=admin{{ item }}
+    oc adm new-project admin{{ item }}-istio-system --display-name="admin{{ item }} Service Mesh Control Plane" --admin=admin{{ item }}
     oc apply -f resources/maistra/service-mesh-control-plane.yml -n admin{{ item }}-istio-system
 #   TO-DO: Wait until control plane completed
   loop: "{{ range(start_id|int, end_id|int + 1, 1)|list }}"

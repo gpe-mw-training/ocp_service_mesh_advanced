@@ -1,10 +1,5 @@
 ---
 
-- name: Augment OAuth identity provider with a additional admin users for ER-Demo
-  shell: |
-    oc create secret generic erdemo-admins-secret --from-file=htpasswd=resources/htpasswd/users_and_admins.htpasswd -n openshift-config 
-    oc apply -f resources/htpasswd/oauth.yml -n openshift-config
-
 - name: "Set all users with view access to various namespaces to include {{ istio_operator_namespace }}"
   shell: |
     oc adm policy add-role-to-user view user{{ item }} -n {{ istio_operator_namespace }}
