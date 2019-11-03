@@ -2,16 +2,26 @@
 
 == Purpose
 
+. Add additional admin[1-100] users to the htpassword IDM provider used by OpenShift
+. Install the elasticsearch operator
+. Install the jaeger operator
+. Install the kiali operator
+. Install the istio / maistra operator
+. Install istio control planes for each student of the course
+. Add additional permissions to users needed for the labs executed by students
+
 == Procedure
 
-. Ensure that an existing OCP4 lab environment has been provisioned.
-. Ensure that Red Hat Service Mesh has been installed in a multi-tenant manner
-.. 1 _istio-operator_ namespace
-.. 1 istio _control plane_ per student
-. Ensure that _Emergency Response Demo_ has been installed for each student on the same OCP4 cluster
+. Provision an OCP4 lab environment
 . Ensure you are authenticated into the OCP4 lab environment as a cluster-admin
 . Clone this repository and execute:
 +
 -----
+$ cd ansible
+
 $ ansible-playbook -i localhost, -c local playbooks/advanced_service_mesh_lab_setup.yml
 -----
+
+== Post install
+
+. Install the _Emergency Response Demo_ for each student on the same OCP4 cluster

@@ -1,7 +1,7 @@
 apiVersion: maistra.io/v1
 kind: ServiceMeshControlPlane
 metadata:
-  name: service-mesh-installation
+  name: full-install
 spec:
   threeScale:
     enabled: false

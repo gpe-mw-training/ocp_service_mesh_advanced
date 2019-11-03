@@ -27,4 +27,4 @@ kiali_operator_install_script_url: "https://raw.githubusercontent.com/kiali/kial
 replica_status: '\{\{.status.readyReplicas\}\}'
 
 start_id: 50
-end_id: 52
+end_id: 51
