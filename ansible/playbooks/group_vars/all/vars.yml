@@ -1,0 +1,30 @@
+---
+
+home_dir: "{{ playbook_dir }}/.."
+
+# resources dir
+resources_base_dir: "{{ home_dir }}/resources"
+
+openshift_cli: oc
+cluster_admin_user: opentlc-mgr
+work_dir: /tmp/ocp_service_mesh_advanced
+
+maistra_operator_namespace: istio-operator
+maistra_version: 1.0.1
+
+elasticsearch_version: 4.3
+elesticsearch_namespace: openshift-logging
+elasticsearch_files_url: "https://raw.githubusercontent.com/gpe-mw-training/elasticsearch-operator/{{ elasticsearch_version }}/manifests"
+
+jaeger_namespace: observability
+jaeger_version: v1.13.1
+
+kiali_namespace: kiali-operator
+kiali_version: v1.8.0
+kiali_operator_install_script: deploy-kiali-operator.sh
+kiali_operator_install_script_url: "https://raw.githubusercontent.com/kiali/kiali/{{ kiali_version }}/operator/deploy/{{ kiali_operator_install_script }}"
+
+replica_status: '\{\{.status.readyReplicas\}\}'
+
+start_id: 50
+end_id: 52

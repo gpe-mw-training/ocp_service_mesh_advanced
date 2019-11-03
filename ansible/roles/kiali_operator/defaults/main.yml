@@ -1,0 +1,8 @@
+---
+
+use_cluster_quota: false
+
+ocp_project: "{{ kiali_namespace }}" 
+ocp_project_display_name: "{{ kiali_namespace }}"
+ocp_project_desc: "Namespace where kiali operator resides"
+project_admin: "{{ cluster_admin_user }}"

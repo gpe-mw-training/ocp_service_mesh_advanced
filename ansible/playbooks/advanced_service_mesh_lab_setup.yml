@@ -1,0 +1,13 @@
+- hosts: all
+  become: false
+  gather_facts: False
+  run_once: true
+  vars_files:
+  roles:
+    - name: idm
+    - name: elasticsearch_operator
+    - name: jaeger_operator
+    - name: kiali_operator
+    - name: maistra_operator
+    - name: maistra_cp_loop
+    - name: permissions

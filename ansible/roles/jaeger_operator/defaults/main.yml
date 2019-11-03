@@ -1,0 +1,8 @@
+---
+
+use_cluster_quota: false
+
+ocp_project: "{{ jaeger_namespace }}" 
+ocp_project_display_name: "{{ jaeger_namespace }}"
+ocp_project_desc: "Namespace where jaeger operator resides"
+project_admin: "{{ cluster_admin_user }}"

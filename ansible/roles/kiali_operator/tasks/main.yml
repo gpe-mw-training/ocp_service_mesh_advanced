@@ -1,0 +1,20 @@
+---
+
+- shell: |
+    {{ openshift_cli }} get deployment kiali-operator -o template --template={{ replica_status }} -n {{ ocp_project }}
+  register: resource_status
+  ignore_errors: true
+
+- block:
+  - name: "Download Kiali shell script to {{ work_dir }}/{{ kiali_operator_install_script }}"
+    get_url:
+      url: "{{ kiali_operator_install_script_url }}"
+      dest: "{{ work_dir }}/{{ kiali_operator_install_script }}"
+      mode: 0777
+  - shell: |
+      {{ work_dir }}/{{ kiali_operator_install_script }} --operator-image-version v1.0.0 --operator-watch-namespace '**' --accessible-namespaces '**' --operator-install-kiali false
+
+  when: >
+    resource_status.stdout is not defined or
+    resource_status.stdout is none or
+    resource_status.stdout != "1"

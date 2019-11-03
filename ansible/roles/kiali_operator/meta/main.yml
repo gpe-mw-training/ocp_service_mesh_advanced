@@ -1,0 +1,5 @@
+---
+
+# Kiali installation shell script takes care of creating OCP project
+#dependencies:
+#  - role: openshift_project

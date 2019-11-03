@@ -1,0 +1,20 @@
+---
+
+# TO-DO:  Use idempotent python based openshift-ansible 
+- name: "Create user Quota - {{ quota_name }} " 
+  shell: |
+        oc create clusterquota "{{ quota_name }}" \
+        --project-annotation-selector=openshift.io/requester="{{ ocp_user }}" \
+        --hard requests.cpu="{{ quota_requests_cpu }}" \
+        --hard limits.cpu="{{ quota_limits_cpu }}"  \
+        --hard requests.memory="{{ quota_requests_memory }}" \
+        --hard limits.memory="{{ quota_limits_memory }}" \
+        --hard configmaps="{{ quota_configmaps }}" \
+        --hard pods="{{ quota_pods }}" \
+        --hard persistentvolumeclaims="{{ quota_persistentvolumeclaims }}"  \
+        --hard services="{{ quota_services }}" \
+        --hard secrets="{{ quota_secrets }}" \
+        --hard requests.storage="{{ quota_requests_storage }}"
+  ignore_errors: true
+  when: >
+    use_cluster_quota|bool

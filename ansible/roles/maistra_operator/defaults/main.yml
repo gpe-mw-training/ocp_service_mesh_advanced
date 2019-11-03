@@ -1,0 +1,11 @@
+---
+
+use_cluster_quota: false
+
+ocp_project: "{{ maistra_operator_namespace }}" 
+ocp_project_display_name: istio-operator
+ocp_project_desc: "Namespace where istio-operator resides"
+project_admin: "{{ cluster_admin_user }}"
+
+
+istio_operator_resource_url: https://raw.githubusercontent.com/Maistra/istio-operator/maistra-1.0.1/deploy/servicemesh-operator.yaml

@@ -1,0 +1,10 @@
+apiVersion: project.openshift.io/v1
+kind: Project
+metadata:
+  annotations:
+    openshift.io/description: "{{ ocp_project_desc }}"
+    openshift.io/display-name: "{{ ocp_project_display_name }}"
+  name: "{{ ocp_project }}"
+spec:
+  finalizers:
+  - kubernetes

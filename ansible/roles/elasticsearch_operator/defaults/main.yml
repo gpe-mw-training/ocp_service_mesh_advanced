@@ -1,0 +1,8 @@
+---
+
+use_cluster_quota: false
+
+ocp_project: "{{ elesticsearch_namespace }}" 
+ocp_project_display_name: "{{ elesticsearch_namespace }}"
+ocp_project_desc: "Namespace where elastic search operator resides"
+project_admin: "{{ cluster_admin_user }}"

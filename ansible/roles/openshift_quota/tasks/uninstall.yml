@@ -1,0 +1,5 @@
+---
+
+- name: Remove quota - "{{ quota_name }}"
+  shell: "oc delete clusterresourcequota {{ quota_name }}"
+  ignore_errors: true

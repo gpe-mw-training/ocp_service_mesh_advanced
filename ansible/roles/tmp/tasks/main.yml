@@ -1,0 +1,5 @@
+---
+
+- name: "create {{ work_dir }}"
+  file:
+    path: "{{ work_dir }}"

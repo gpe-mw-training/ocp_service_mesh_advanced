@@ -1,5 +1,9 @@
 = Advanced Service Mesh Lab Assets
 
+== Purpose
+
+== Procedure
+
 . Ensure that an existing OCP4 lab environment has been provisioned.
 . Ensure that Red Hat Service Mesh has been installed in a multi-tenant manner
 .. 1 _istio-operator_ namespace
@@ -9,5 +13,5 @@
 . Clone this repository and execute:
 +
 -----
-$ ansible-playbook -i localhost, -c local advanced_service_mesh.yml
+$ ansible-playbook -i localhost, -c local playbooks/advanced_service_mesh_lab_setup.yml
 -----

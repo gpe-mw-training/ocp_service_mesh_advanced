@@ -1,0 +1,29 @@
+---
+
+- shell: |
+    {{ openshift_cli }} get deployment jaeger-operator -o template --template={{ replica_status }} -n {{ ocp_project }}
+  register: resource_status
+  ignore_errors: true
+
+- block:
+    - name: "Install jaeger in {{ ocp_project }}"
+      shell: |
+        {{ openshift_cli }} create -n {{ ocp_project }} -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/{{ jaeger_version }}/deploy/crds/jaegertracing_v1_jaeger_crd.yaml
+        {{ openshift_cli }} create -n {{ ocp_project }} -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/{{ jaeger_version }}/deploy/service_account.yaml
+        {{ openshift_cli }} create -n {{ ocp_project }} -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/{{ jaeger_version }}/deploy/role.yaml
+        {{ openshift_cli }} create -n {{ ocp_project }} -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/{{ jaeger_version }}/deploy/role_binding.yaml
+        {{ openshift_cli }} create -n {{ ocp_project }} -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/{{ jaeger_version }}/deploy/operator.yaml
+    
+    - name: "Wait until jaeger operator is active in {{ ocp_project }}"
+      shell: "{{ openshift_cli }} get deployment jaeger-operator -o template --template={{ json_template }} -n {{ ocp_project }}"
+      vars:
+        json_template: '\{\{.status.readyReplicas\}\}'
+      register: result
+      until: result.stdout == "1"
+      retries: 30
+      delay: 10
+      changed_when: false
+  when: >
+    resource_status.stdout is not defined or
+    resource_status.stdout is none or
+    resource_status.stdout != "1"

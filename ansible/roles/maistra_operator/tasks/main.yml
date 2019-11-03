@@ -1,0 +1,27 @@
+---
+
+- shell: |
+    {{ openshift_cli }} get deployment istio-operator -o template --template={{ replica_status }} -n {{ ocp_project }}
+  register: resource_status
+  ignore_errors: true
+
+
+- block:
+    - name: "Install istio operator in {{ maistra_operator_namespace }}"
+      shell: |
+        oc apply -n {{ ocp_project }} -f {{ istio_operator_resource_url }}
+    
+    - name: "Wait until service mesh operator is active"
+      shell: "oc get deployment istio-operator -o template --template={{ json_template }} -n {{ ocp_project }}"
+      vars:
+        json_template: '\{\{.status.readyReplicas\}\}'
+      register: result
+      until: result.stdout == "1"
+      retries: 30
+      delay: 10
+      changed_when: false
+
+  when: >
+    resource_status.stdout is not defined or
+    resource_status.stdout is none or
+    resource_status.stdout != "1"

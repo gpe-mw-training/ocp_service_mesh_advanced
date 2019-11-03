@@ -1,0 +1,6 @@
+---
+
+- name: "Install maistra control_plane from {{ start_id }} to {{ end_id }}"
+  include_role: 
+    name: maistra_control_plane
+  loop: "{{ range(start_id|int, end_id|int + 1, 1)|list }}"

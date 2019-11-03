@@ -1,8 +1,0 @@
-- hosts: all
-  become: false
-  gather_facts: False
-  vars_files:
-  roles:
-    - idm
-    - maistra
-    - permissions
