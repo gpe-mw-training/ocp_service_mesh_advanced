@@ -13,3 +13,8 @@
   retries: 30
   delay: 10
   changed_when: false
+
+- name: "Install empty maistra ServiceMeshMemberRoll in {{ ocp_project }}"
+  shell: |
+    {{ openshift_cli }} apply -f {{ resources_base_dir }}/maistra/service-mesh-member-roll-empty.yml -n {{ ocp_project }}
+

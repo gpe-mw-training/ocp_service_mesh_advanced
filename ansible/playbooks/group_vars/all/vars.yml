@@ -28,3 +28,5 @@ replica_status: '\{\{.status.readyReplicas\}\}'
 
 start_id: 50
 end_id: 51
+
+er_demo_namespace_suffix: er-demo
