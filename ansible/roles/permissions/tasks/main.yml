@@ -3,6 +3,8 @@
 - name: "Set all users with view access to various namespaces to include {{ maistra_operator_namespace }}"
   shell: |
     oc adm policy add-role-to-user view user{{ item }} -n {{ maistra_operator_namespace }}
-    oc adm policy add-role-to-user view user{{ item }} -n openshift-console
+    oc adm policy add-role-to-user view user{{ item }} -n admin{{ item }}-istio-system
+    oc adm policy add-role-to-user view admin{{ item }} -n {{ maistra_operator_namespace }}
     oc adm policy add-cluster-role-to-user sudoer user{{ item }}
+    oc adm policy add-cluster-role-to-user sudoer admin{{ item }}
   loop: "{{ range(start_id|int, end_id|int + 1, 1)|list }}"
