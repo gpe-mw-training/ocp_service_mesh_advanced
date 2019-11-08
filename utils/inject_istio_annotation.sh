@@ -1,7 +1,8 @@
+#!/bin/bash
 
-# Identify names of DCs in Emergency Response demo
-for DC_NAME in $(oc get dc -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' -n $ERDEMO_USER-er-demo) 
-do
+# Responsible for injecting the istio annotation that opts in a DC for auto injection of the envoy sidecar
+function injectAndResume() {
+
   echo -en "\n\nInjecting istio sidecar annotation into DC: $DC_NAME\n"
 
   # 1)  Add istio inject annotion into pod.spec.template
@@ -16,20 +17,32 @@ spec:
         sidecar.istio.io/inject: \"true\"" \
   | oc apply -n $ERDEMO_USER-er-demo -f -
 
-  # 2)  Resume DC
-  oc rollout resume dc $DC_NAME -n $ERDEMO_USER-er-demo
-
-
-  # 3)  Loop until envoy enabled pod starts up
+  # 2)  Loop until envoy enabled pod starts up
   replicas=1
   readyReplicas=0 
-  while [ $replicas != $readyReplicas ]
+  counter=1
+  while (( $replicas != $readyReplicas && $counter != 20 ))
   do
     sleep 10 
     oc get dc $DC_NAME -o json -n $ERDEMO_USER-er-demo > /tmp/$DC_NAME.json
     replicas=$(cat /tmp/$DC_NAME.json | jq .status.replicas)
     readyReplicas=$(cat /tmp/$DC_NAME.json | jq .status.readyReplicas)
-    echo -en "\n$DC_NAME:  $replicas     $readyReplicas"
+    echo -en "\n$counter    $DC_NAME    $replicas   $readyReplicas\n"
+    let counter=counter+1
   done
+}
 
+
+# Enable ER-Demo databases for Envoy auto-injection
+for DC_NAME in postgresql user50-process-service-postgresql
+do
+  injectAndResume
 done
+
+
+# Enable remainder of ER-Demo services for Envoy auto-injection
+for DC_NAME in $(oc get dc -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' -n $ERDEMO_USER-er-demo ) 
+do
+  injectAndResume
+done
+

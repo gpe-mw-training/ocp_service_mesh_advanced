@@ -8,6 +8,6 @@
     oc adm policy add-role-to-user view admin{{ item }} -n {{ maistra_operator_namespace }}
     oc adm policy add-role-to-user admin admin{{ item }} -n user{{ item }}-{{ er_demo_namespace_suffix }}
 
-    oc adm policy add-cluster-role-to-user sudoer user{{ item }}
+    # Needed to review CRDs
     oc adm policy add-cluster-role-to-user sudoer admin{{ item }}
   loop: "{{ range(start_id|int, end_id|int + 1, 1)|list }}"
