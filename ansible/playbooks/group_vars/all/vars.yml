@@ -27,6 +27,24 @@ kiali_operator_install_script_url: "https://raw.githubusercontent.com/kiali/kial
 replica_status: '\{\{.status.readyReplicas\}\}'
 
 start_id: 50
-end_id: 51
+end_id: 50
 
 er_demo_namespace_suffix: er-demo
+
+
+#####        3scale API Mgmt        #########
+
+# create_incident_service_api_resources
+#   Set this value to true if the creation of incident service related API management resource is desired in 3scale API Manager
+#   When set to true, the ansible role assumes that the following exists :
+#     1) 3scale API Management control plane has been provisioned
+#     2) 1 tenant per student has been provisioned in the 3scale control plane
+#     3) 1 set of API gateways (that correspond to a tenant) has been provisioned per student and is co-located in the same OCP cluster as ER-Demo project
+#   
+#   The corresponding ansible for the above pre-requisites can be found here:   github.com/gpe-mw-ansible-org/3scale_multitenant
+create_incident_service_api_resources: false
+
+API_MANAGER_NS: "3scale-mt-api0"
+api_service_name: incident-service
+
+#############################################

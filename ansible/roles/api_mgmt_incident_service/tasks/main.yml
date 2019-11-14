@@ -1,0 +1,7 @@
+---
+
+- block:
+    - name: "create incident service API resources at {{ api_mgmt_subdomain_base }}"
+      include: incident_service_resources.yml
+      loop: "{{ range(start_id|int, end_id|int + 1, 1)|list }}"
+  when: create_incident_service_api_resources|bool

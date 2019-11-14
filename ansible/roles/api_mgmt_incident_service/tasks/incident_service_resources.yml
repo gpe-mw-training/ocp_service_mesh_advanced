@@ -1,0 +1,169 @@
+---
+
+- set_fact:
+    tenant_admin_url: "user{{ item }}-{{ API_MANAGER_NS }}-admin.apps.{{ api_mgmt_subdomain_base }}"
+    response_dir: "{{ work_dir }}/{{ api_service_name }}"
+    private_base_url: "http://user{{ item }}-{{ api_service_name }}.user{{ item }}-er-demo:8080"
+    public_stage_url: "https://user{{ item }}-{{ API_MANAGER_NS }}-mt-stage-generic.apps.{{ api_mgmt_subdomain_base }}:443"
+    public_prod_url: "https://user{{ item }}-{{ API_MANAGER_NS }}-mt-prod-generic.apps.{{ api_mgmt_subdomain_base }}:443"
+
+- name: "{{ item }} create {{ response_dir }}"
+  file:
+    path: "{{ response_dir }}"
+    state: directory
+
+- shell: |
+    oc describe  deploy prod-apicast -n user{{ item }}-gw | grep THREESCALE_PORTAL_ENDPOINT | cut -d'@' -f1 | cut -d'/' -f3
+  register: tenant_access_token
+
+- set_fact:
+    output_file: "{{ item }}_list_services.xml"
+
+- name: "{{ item }} 1)  list api resources;  https://{{ tenant_admin_url }}?access_token={{ tenant_access_token.stdout }}"
+  uri: 
+    url: "https://{{ tenant_admin_url }}/admin/api/services.xml"
+    body: "access_token={{ tenant_access_token.stdout }}"
+    method: GET
+    timeout: 5
+    status_code: 200
+    return_content: yes
+    validate_certs: no
+  register: list_services
+
+- name: "{{ item }}  2) copy response to {{ response_dir }}/{{ output_file }}"
+  copy:
+    content: "{{ list_services.content }}"
+    dest: "{{ response_dir }}/{{ output_file }}"
+
+- name: "{{ item }} 3) Pick out the service ID of the default api service"
+  xml:
+    path: "{{ response_dir }}/{{ output_file }}"
+    xpath: //services/service[name='API']/id
+    content: text
+  register: check_default_api 
+  ignore_errors: True
+
+- block:
+  - set_fact:
+      defaultServiceId: "{{ check_default_api.matches[0].id }}"
+
+  - name: "{{ item }} 4) Delete default service API {{ defaultServiceId }}"
+    uri: 
+      url: "https://{{ tenant_admin_url }}/admin/api/services/{{ defaultServiceId }}.xml"
+      body: "access_token={{ tenant_access_token.stdout }}"
+      method: DELETE
+      timeout: 5
+      return_content: yes
+      validate_certs: no
+      status_code: 200
+  when: >
+    check_default_api is not failed
+
+
+- set_fact:
+    output_file: "{{ item }}_create_service_response.xml"
+
+- name: "{{ item }} 5) create {{ api_service_name }} API in 3scale"
+  uri: 
+    url: "https://{{ tenant_admin_url }}/admin/api/services.xml"
+    body: "access_token={{ tenant_access_token.stdout }}&name={{ api_service_name }}"
+    method: POST
+    timeout: 5
+    return_content: yes
+    validate_certs: no
+
+    # status_code:  HTTP Error 422: Unprocessable Entity :  System name has already been taken
+    status_code: 201, 422
+
+  register: create_service_response
+
+- name: "{{ item }}  6) copy response to {{ response_dir }}/{{ output_file }}"
+  copy:
+    content: "{{ create_service_response.content }}"
+    dest: "{{ response_dir }}/{{ output_file }}"
+  when: create_service_response.status == 201
+
+- name: "{{ item }} 7) Pick out the service ID of the new {{ api_service_name }}"
+  xml:
+    path: "{{ response_dir }}/{{ output_file }}"
+    xpath: //service/id
+    content: text
+  register: serviceId
+
+- name: "{{ item }} 8) create {{ api_service_name }}_app_plan for serviceId = {{ serviceId.matches[0].id }}"
+  uri: 
+    url: "https://{{ tenant_admin_url }}/admin/api/services/{{ serviceId.matches[0].id }}/application_plans.xml"
+    body: "access_token={{ tenant_access_token.stdout }}&name={{ api_service_name }}_app_plan&state_event=publish"
+    method: POST
+    timeout: 5
+    return_content: yes
+    validate_certs: no
+
+    # status_code:  HTTP Error 422: Unprocessable Entity :  System name has already been taken
+    status_code: 201, 422
+
+  register: create_app_plan
+
+- set_fact:
+    output_file: "{{ item }}_create_app_plan_response.xml"
+
+- name: "{{ item }}  9) copy response to {{ response_dir }}/{{ output_file }}"
+  copy:
+    content: "{{ create_app_plan.content }}"
+    dest: "{{ response_dir }}/{{ output_file }}"
+  when: create_app_plan.status == 201
+
+- name: "{{ item }} 10) Pick out the app plan ID of the new {{ api_service_name }}"
+  xml:
+    path: "{{ response_dir }}/{{ output_file }}"
+    xpath: //plan/id
+    content: text
+  register: appPlanId
+
+- name: "{{ item }} 11) update service_proxy for serviceId = {{ serviceId.matches[0].id }}"
+  uri: 
+    url: "https://{{ tenant_admin_url }}/admin/api/services/{{ serviceId.matches[0].id }}/proxy.xml"
+    body: "access_token={{ tenant_access_token.stdout }}&api_backend={{ private_base_url }}&endpoint={{ public_prod_url }}&sandbox_endpoint={{ public_stage_url }}"
+    method: PATCH
+    timeout: 5
+    return_content: yes
+    validate_certs: no
+    status_code: 200
+  register: update_proxy
+
+- set_fact:
+    output_file: "{{ item }}_proxy_config.json"
+
+- name: "{{ item }} 12) Determine the ID of the sandbox environment proxy_config"
+  uri:
+    url: "https://{{ tenant_admin_url }}/admin/api/services/{{ serviceId.matches[0].id }}/proxy/configs/sandbox.json"
+    body: "access_token={{ tenant_access_token.stdout }}"
+    method: GET
+    timeout: 5
+    return_content: yes
+    validate_certs: no
+    status_code: 200
+  register: proxy_config
+
+- name: "{{ item }}  13) copy response to {{ response_dir }}/{{ output_file }}"
+  copy:
+    content: "{{ proxy_config.content }}"
+    dest: "{{ response_dir }}/{{ output_file }}"
+  when: proxy_config.status == 200
+
+- name: "{{ item }} 14) Pick out the proxy_config id"
+  set_fact:
+    proxy_config_version: "{{ (proxy_config.content | from_json).proxy_configs[-1].proxy_config.version }}"
+  
+- name: "{{ item }} 15) Promote the sandbox environment to a production environment; {{ proxy_config_version }}"
+  uri:
+    url: "https://{{ tenant_admin_url }}/admin/api/services/{{ serviceId.matches[0].id }}/proxy/configs/sandbox/{{ proxy_config_version }}/promote.json"
+    body: "access_token={{ tenant_access_token.stdout }}&to=production"
+    method: POST
+    timeout: 5
+    return_content: yes
+    validate_certs: no
+
+    # 422: version has already been taken
+    status_code: 201, 422
+

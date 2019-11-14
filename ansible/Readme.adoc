@@ -9,17 +9,24 @@
 . Install the istio / maistra operator
 . Install istio control planes for each student of the course
 . Add additional permissions to users needed for the labs executed by students
+. Optional:  Seed 3scale API Mgmt tenants with _incident-service_ related API resources 
 
 == Procedure
 
 . Provision an OCP4 lab environment
+. Optional: Install 3scale API Manager and tenants as per github.com/gpe-mw-ansible-org/3scale_multitenant
 . Ensure you are authenticated into the OCP4 lab environment as a cluster-admin
 . Clone this repository and execute:
 +
 -----
 $ cd ansible
 
-$ ansible-playbook -i localhost, -c local playbooks/advanced_service_mesh_lab_setup.yml
+$ export create_incident_service_api_resources=false
+$ export api_mgmt_subdomain_base=<change me>                        # ie: cluster-168d.168d.example.opentlc.com
+
+$ ansible-playbook -i localhost, -c local playbooks/advanced_service_mesh_lab_setup.yml \
+    -e "create_incident_service_api_resources=$create_incident_service_api_resources" \
+    -e "api_mgmt_subdomain_base=$api_mgmt_subdomain_base" 
 -----
 
 == Post install
