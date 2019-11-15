@@ -43,27 +43,11 @@
   register: check_default_api 
   ignore_errors: True
 
-- block:
-  - set_fact:
-      defaultServiceId: "{{ check_default_api.matches[0].id }}"
-
-  - name: "{{ item }} 4) Delete default service API {{ defaultServiceId }}"
-    uri: 
-      url: "https://{{ tenant_admin_url }}/admin/api/services/{{ defaultServiceId }}.xml"
-      body: "access_token={{ tenant_access_token.stdout }}"
-      method: DELETE
-      timeout: 5
-      return_content: yes
-      validate_certs: no
-      status_code: 200
-  when: >
-    check_default_api is not failed
-
 
 - set_fact:
     output_file: "{{ item }}_create_service_response.xml"
 
-- name: "{{ item }} 5) create {{ api_service_name }} API in 3scale"
+- name: "{{ item }} 4) create {{ api_service_name }} API in 3scale"
   uri: 
     url: "https://{{ tenant_admin_url }}/admin/api/services.xml"
     body: "access_token={{ tenant_access_token.stdout }}&name={{ api_service_name }}"
@@ -77,20 +61,20 @@
 
   register: create_service_response
 
-- name: "{{ item }}  6) copy response to {{ response_dir }}/{{ output_file }}"
+- name: "{{ item }}  5) copy response to {{ response_dir }}/{{ output_file }}"
   copy:
     content: "{{ create_service_response.content }}"
     dest: "{{ response_dir }}/{{ output_file }}"
   when: create_service_response.status == 201
 
-- name: "{{ item }} 7) Pick out the service ID of the new {{ api_service_name }}"
+- name: "{{ item }} 6) Pick out the service ID of the new {{ api_service_name }}"
   xml:
     path: "{{ response_dir }}/{{ output_file }}"
     xpath: //service/id
     content: text
   register: serviceId
 
-- name: "{{ item }} 8) create {{ api_service_name }}_app_plan for serviceId = {{ serviceId.matches[0].id }}"
+- name: "{{ item }} 7) create {{ api_service_name }}_app_plan for serviceId = {{ serviceId.matches[0].id }}"
   uri: 
     url: "https://{{ tenant_admin_url }}/admin/api/services/{{ serviceId.matches[0].id }}/application_plans.xml"
     body: "access_token={{ tenant_access_token.stdout }}&name={{ api_service_name }}_app_plan&state_event=publish"
@@ -107,20 +91,20 @@
 - set_fact:
     output_file: "{{ item }}_create_app_plan_response.xml"
 
-- name: "{{ item }}  9) copy response to {{ response_dir }}/{{ output_file }}"
+- name: "{{ item }}  8) copy response to {{ response_dir }}/{{ output_file }}"
   copy:
     content: "{{ create_app_plan.content }}"
     dest: "{{ response_dir }}/{{ output_file }}"
   when: create_app_plan.status == 201
 
-- name: "{{ item }} 10) Pick out the app plan ID of the new {{ api_service_name }}"
+- name: "{{ item }} 9) Pick out the app plan ID of the new {{ api_service_name }}"
   xml:
     path: "{{ response_dir }}/{{ output_file }}"
     xpath: //plan/id
     content: text
   register: appPlanId
 
-- name: "{{ item }} 11) update service_proxy for serviceId = {{ serviceId.matches[0].id }}"
+- name: "{{ item }} 10) update service_proxy for serviceId = {{ serviceId.matches[0].id }}"
   uri: 
     url: "https://{{ tenant_admin_url }}/admin/api/services/{{ serviceId.matches[0].id }}/proxy.xml"
     body: "access_token={{ tenant_access_token.stdout }}&api_backend={{ private_base_url }}&endpoint={{ public_prod_url }}&sandbox_endpoint={{ public_stage_url }}"
@@ -134,7 +118,7 @@
 - set_fact:
     output_file: "{{ item }}_proxy_config.json"
 
-- name: "{{ item }} 12) Determine the ID of the sandbox environment proxy_config"
+- name: "{{ item }} 11) Determine the ID of the sandbox environment proxy_config"
   uri:
     url: "https://{{ tenant_admin_url }}/admin/api/services/{{ serviceId.matches[0].id }}/proxy/configs/sandbox.json"
     body: "access_token={{ tenant_access_token.stdout }}"
@@ -145,17 +129,17 @@
     status_code: 200
   register: proxy_config
 
-- name: "{{ item }}  13) copy response to {{ response_dir }}/{{ output_file }}"
+- name: "{{ item }}  12) copy response to {{ response_dir }}/{{ output_file }}"
   copy:
     content: "{{ proxy_config.content }}"
     dest: "{{ response_dir }}/{{ output_file }}"
   when: proxy_config.status == 200
 
-- name: "{{ item }} 14) Pick out the proxy_config id"
+- name: "{{ item }} 13) Pick out the proxy_config id"
   set_fact:
     proxy_config_version: "{{ (proxy_config.content | from_json).proxy_configs[-1].proxy_config.version }}"
   
-- name: "{{ item }} 15) Promote the sandbox environment to a production environment; {{ proxy_config_version }}"
+- name: "{{ item }} 14) Promote the sandbox environment to a production environment; {{ proxy_config_version }}"
   uri:
     url: "https://{{ tenant_admin_url }}/admin/api/services/{{ serviceId.matches[0].id }}/proxy/configs/sandbox/{{ proxy_config_version }}/promote.json"
     body: "access_token={{ tenant_access_token.stdout }}&to=production"
@@ -166,4 +150,20 @@
 
     # 422: version has already been taken
     status_code: 201, 422
+
+- block:
+  - set_fact:
+      defaultServiceId: "{{ check_default_api.matches[0].id }}"
+
+  - name: "{{ item }} 5) Delete default service API {{ defaultServiceId }}"
+    uri: 
+      url: "https://{{ tenant_admin_url }}/admin/api/services/{{ defaultServiceId }}.xml"
+      body: "access_token={{ tenant_access_token.stdout }}"
+      method: DELETE
+      timeout: 5
+      return_content: yes
+      validate_certs: no
+      status_code: 200
+  when: >
+    check_default_api is not failed
 
