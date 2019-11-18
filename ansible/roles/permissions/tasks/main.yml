@@ -10,4 +10,7 @@
 
     # Needed to review CRDs
     oc adm policy add-cluster-role-to-user sudoer admin{{ item }}
+
+    # Needed for operating with 3scale API Mgmt tenants
+    oc adm policy add-role-to-user view admin{{ item }} -n {{ API_MANAGER_NS }}
   loop: "{{ range(start_id|int, end_id|int + 1, 1)|list }}"
