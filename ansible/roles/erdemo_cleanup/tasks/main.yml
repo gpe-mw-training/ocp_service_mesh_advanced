@@ -1,0 +1,7 @@
+---
+
+- name: delete completed pods in Emergency Response application namespaces
+  include: erdemo_cleanup.yml
+  loop: "{{ range(start_id|int, end_id|int + 1, 1)|list }}"
+  loop_control:
+    loop_var: er_demo_id

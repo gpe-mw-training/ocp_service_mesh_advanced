@@ -12,3 +12,4 @@
     - name: maistra_cp_loop
     - name: permissions
     - name: api_mgmt_incident_service
+    - name: erdemo_cleanup

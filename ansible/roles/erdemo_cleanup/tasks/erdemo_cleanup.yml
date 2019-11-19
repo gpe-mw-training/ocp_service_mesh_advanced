@@ -1,0 +1,11 @@
+---
+
+- name: "{{ er_demo_id }} Identify pods in Completed status in user{{ er_demo_id }}-{{ er_demo_namespace_suffix }}"
+  shell: |
+    oc get pods -n user{{ er_demo_id }}-{{ er_demo_namespace_suffix }} | grep Completed | awk '{print $1}'
+  register: completed_pods
+
+- name: "{{ er_demo_id }} Delete completed pods {{ completed_pods.stdout }}"
+  shell: |
+    oc delete pod {{ item }} -n user{{ er_demo_id }}-{{ er_demo_namespace_suffix }}
+  with_items: "{{ completed_pods.stdout.splitlines() }}"
