@@ -34,7 +34,7 @@ spec:
 
 
 # Enable ER-Demo databases for Envoy auto-injection
-for DC_NAME in postgresql user50-process-service-postgresql
+for DC_NAME in postgresql $ERDEMO_USER-process-service-postgresql
 do
   injectAndResume
 done
