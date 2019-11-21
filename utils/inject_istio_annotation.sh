@@ -40,7 +40,7 @@ do
 done
 
 
-# Enable remainder of ER-Demo services for Envoy auto-injection
+# Enable remainder of ER-Demo DeploymentConfigs for Envoy auto-injection
 for DC_NAME in $(oc get dc -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}' -n $ERDEMO_USER-er-demo ) 
 do
   injectAndResume
