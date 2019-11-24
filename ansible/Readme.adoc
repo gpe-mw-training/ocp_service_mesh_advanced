@@ -21,10 +21,10 @@
 -----
 cd ansible
 
-export create_incident_service_api_resources=false
 export api_mgmt_subdomain_base=<change me>                        # ie: cluster-168d.168d.example.opentlc.com
-start_id=1
-end_id=2
+export create_incident_service_api_resources=false                # Please see comments in playbooks/group_vars/all/vars.yml
+start_id=24
+end_id=25
 
 $ ansible-playbook -i localhost, -c local playbooks/advanced_service_mesh_lab_setup.yml \
     -e "create_incident_service_api_resources=$create_incident_service_api_resources" \
