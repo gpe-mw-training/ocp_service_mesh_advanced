@@ -19,10 +19,13 @@ elasticsearch_files_url: "https://raw.githubusercontent.com/gpe-mw-training/elas
 jaeger_namespace: observability
 jaeger_version: v1.13.1
 
-kiali_namespace: kiali-operator
-kiali_version: v1.8.0
+kiali_version: 1.0.7
+kiali_operator_version_label: "v{{ kiali_version }}"        # Determines URL path to kiali related resources
 kiali_operator_install_script: deploy-kiali-operator.sh
-kiali_operator_install_script_url: "https://raw.githubusercontent.com/kiali/kiali/{{ kiali_version }}/operator/deploy/{{ kiali_operator_install_script }}"
+kiali_operator_install_script_url: "https://raw.githubusercontent.com/kiali/kiali/{{ kiali_operator_version_label }}/operator/deploy/{{ kiali_operator_install_script }}"
+kiali_operator_namespace: openshift-operators
+kiali_operator_image_name: registry.redhat.io/openshift-service-mesh/kiali-rhel7-operator
+kiali_operator_image_version: "{{ kiali_version }}"         # Specifies image tag
 
 replica_status: '\{\{.status.readyReplicas\}\}'
 

@@ -6,13 +6,26 @@
   ignore_errors: true
 
 - block:
-  - name: "Download Kiali shell script to {{ work_dir }}/{{ kiali_operator_install_script }}"
-    get_url:
-      url: "{{ kiali_operator_install_script_url }}"
-      dest: "{{ work_dir }}/{{ kiali_operator_install_script }}"
-      mode: 0777
-  - shell: |
-      {{ work_dir }}/{{ kiali_operator_install_script }} --operator-image-version v1.0.0 --operator-watch-namespace '**' --accessible-namespaces '**' --operator-install-kiali false
+  - name: "copy {{ resources_base_dir }}/kiali/subscription.yml"
+    template:
+      src: "{{ resources_base_dir }}/kiali/subscription.yml"
+      dest: "{{ work_dir }}/kiali-subscription.yml"
+
+  - name: "Create kiali subscription"
+    k8s:
+      state: present
+      namespace: "{{ kiali_operator_namespace }}"
+      src: "{{ work_dir }}/kiali-subscription.yml"
+
+  - name: "Wait until service mesh operator is active"
+    shell: "oc get deployment kiali-operator -o template --template={{ json_template }} -n {{ ocp_project }}"
+    vars:
+      json_template: '\{\{.status.readyReplicas\}\}'
+    register: result
+    until: result.stdout == "1"
+    retries: 30
+    delay: 10
+    changed_when: false
 
   when: >
     resource_status.stdout is not defined or
