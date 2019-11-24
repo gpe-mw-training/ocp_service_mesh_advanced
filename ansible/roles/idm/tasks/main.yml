@@ -14,8 +14,8 @@
   # As per: https://docs.openshift.com/container-platform/4.2/authentication/identity_providers/configuring-htpasswd-identity-provider.html
   - name: Augment OAuth identity provider with a additional admin users for ER-Demo
     shell: |
-      oc create secret generic erdemo-admins-secret --from-file=htpasswd=resources/htpasswd/users_and_admins.htpasswd -n openshift-config 
-      oc apply -f resources/htpasswd/oauth.yml -n openshift-config
+      oc create secret generic erdemo-admins-secret --from-file=htpasswd={{ resources_base_dir }}/htpasswd/users_and_admins.htpasswd -n openshift-config 
+      oc apply -f {{ resources_base_dir }}/htpasswd/oauth.yml -n openshift-config
 
   when: >
     resource_status.stdout is not defined or
