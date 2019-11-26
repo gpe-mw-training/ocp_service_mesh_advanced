@@ -9,20 +9,26 @@
 . Install the istio / maistra operator
 . Install istio control planes for each student of the course
 . Add additional permissions to users needed for the labs executed by students
-. Optional:  Seed 3scale API Mgmt tenants with _incident-service_ related API resources 
+. Seed 3scale API Mgmt tenants with _incident-service_ related API resources 
 
 == Procedure
 
-. Provision an OCP4 lab environment
-. Optional: Install 3scale API Manager and tenants as per github.com/gpe-mw-ansible-org/3scale_multitenant
+. Provision the components discussed in the course link:https://github.com/redhat-gpe/ocp_service_mesh_advanced/blob/master/Instructor_Notes.adoc[Instructor_notes].
++
+ie: OCP4, 3scale, ER-Demo, etc
+
 . Ensure you are authenticated into the OCP4 lab environment as a cluster-admin
 . Clone this repository and execute:
 +
 -----
 cd ansible
 
-export api_mgmt_subdomain_base=<change me>                        # ie: cluster-168d.168d.example.opentlc.com
-export create_incident_service_api_resources=false                # Please see comments in playbooks/group_vars/all/vars.yml
+export api_mgmt_subdomain_base=$(oc whoami --show-console | cut -d'.' -f 3-)                        # subdomain base where 3scale API gateways reside.
+                                                                                                    # most likely will be the same cluster that ER-Demo is on
+                                                                                                    # ie: cluster-168d.168d.example.opentlc.com
+
+export create_incident_service_api_resources=true                                                   # Please see comments in playbooks/group_vars/all/vars.yml
+
 start_id=24
 end_id=25
 
