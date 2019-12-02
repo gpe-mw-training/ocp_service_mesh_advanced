@@ -23,7 +23,7 @@ spec:
   counter=1
   while (( $replicas != $readyReplicas && $counter != 20 ))
   do
-    sleep 10 
+    sleep 15 
     oc get dc $DC_NAME -o json -n $ERDEMO_USER-er-demo > /tmp/$DC_NAME.json
     replicas=$(cat /tmp/$DC_NAME.json | jq .status.replicas)
     readyReplicas=$(cat /tmp/$DC_NAME.json | jq .status.readyReplicas)
