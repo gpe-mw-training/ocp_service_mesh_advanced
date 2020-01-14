@@ -2,5 +2,5 @@
 
 ocp_project: "admin{{ item }}-istio-system"
 ocp_project_display_name: "admin{{ item }} Service Mesh Control Plane"
-ocp_project_desc: "Namespace where istio-operator resides"
+ocp_project_desc: "Namespace where Service Mesh Control Plane resides"
 project_admin: "admin{{ item }}"
