@@ -2,7 +2,7 @@
 
 use_cluster_quota: false
 
-ocp_project: "{{ jaeger_namespace }}" 
-ocp_project_display_name: "{{ jaeger_namespace }}"
-ocp_project_desc: "Namespace where jaeger operator resides"
+ocp_project: "{{ jaeger_operator_namespace }}" 
+ocp_project_display_name: "{{ jaeger_operator_namespace_display_name }}"
+ocp_project_desc: "{{ jaeger_operator_namespace_desc }}"
 project_admin: "{{ cluster_admin_user }}"

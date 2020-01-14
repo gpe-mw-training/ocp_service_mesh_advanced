@@ -3,8 +3,8 @@
 use_cluster_quota: false
 
 ocp_project: "{{ maistra_operator_namespace }}" 
-ocp_project_display_name: istio-operator
-ocp_project_desc: "Namespace where istio-operator resides"
+ocp_project_display_name: "{{ maistra_operator_namespace_display_name }}"
+ocp_project_desc: "{{ maistra_operator_namespace_desc }}"
 project_admin: "{{ cluster_admin_user }}"
 
 

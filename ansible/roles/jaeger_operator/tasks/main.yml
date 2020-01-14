@@ -6,23 +6,33 @@
   ignore_errors: true
 
 - block:
-    - name: "Install jaeger in {{ ocp_project }}"
-      shell: |
-        {{ openshift_cli }} create -n {{ ocp_project }} -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/{{ jaeger_version }}/deploy/crds/jaegertracing_v1_jaeger_crd.yaml
-        {{ openshift_cli }} create -n {{ ocp_project }} -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/{{ jaeger_version }}/deploy/service_account.yaml
-        {{ openshift_cli }} create -n {{ ocp_project }} -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/{{ jaeger_version }}/deploy/role.yaml
-        {{ openshift_cli }} create -n {{ ocp_project }} -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/{{ jaeger_version }}/deploy/role_binding.yaml
-        {{ openshift_cli }} create -n {{ ocp_project }} -f https://raw.githubusercontent.com/jaegertracing/jaeger-operator/{{ jaeger_version }}/deploy/operator.yaml
-    
-    - name: "Wait until jaeger operator is active in {{ ocp_project }}"
-      shell: "{{ openshift_cli }} get deployment jaeger-operator -o template --template={{ json_template }} -n {{ ocp_project }}"
-      vars:
-        json_template: '\{\{.status.readyReplicas\}\}'
-      register: result
-      until: result.stdout == "1"
-      retries: 30
-      delay: 10
-      changed_when: false
+  - name: "copy {{ resources_base_dir }}/jaeger/subscription.yml"
+    template:
+      src: "{{ resources_base_dir }}/jaeger/subscription.yml"
+      dest: "{{ work_dir }}/jaeger-subscription.yml"
+
+  - name: "Create operatorgroups in {{ ocp_project }}"
+    k8s:
+      state: present
+      namespace: "{{ ocp_project }}"
+      src: "{{ resources_base_dir }}/operatorgroup/operatorgroup.yml"
+
+  - name: "Create jaeger subscription"
+    k8s:
+      state: present
+      namespace: "{{ ocp_project }}"
+      src: "{{ work_dir }}/jaeger-subscription.yml"
+
+  - name: "Wait until jaeger operator is active"
+    shell: "oc get deployment jaeger-operator -o template --template={{ json_template }} -n {{ ocp_project }}"
+    vars:
+      json_template: '\{\{.status.readyReplicas\}\}'
+    register: result
+    until: result.stdout == "1"
+    retries: 30
+    delay: 10
+    changed_when: false
+
   when: >
     resource_status.stdout is not defined or
     resource_status.stdout is none or

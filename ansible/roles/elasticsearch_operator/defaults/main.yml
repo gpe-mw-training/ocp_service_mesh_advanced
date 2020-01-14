@@ -2,7 +2,7 @@
 
 use_cluster_quota: false
 
-ocp_project: "{{ elesticsearch_namespace }}" 
-ocp_project_display_name: "{{ elesticsearch_namespace }}"
-ocp_project_desc: "Namespace where elastic search operator resides"
+ocp_project: "{{ elasticsearch_operator_namespace }}" 
+ocp_project_display_name: "{{ elasticsearch_operator_namespace_display_name }}"
+ocp_project_desc: "{{ elasticsearch_operator_namespace_desc }}"
 project_admin: "{{ cluster_admin_user }}"

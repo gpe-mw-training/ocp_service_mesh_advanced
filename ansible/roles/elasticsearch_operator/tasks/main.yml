@@ -6,26 +6,36 @@
   ignore_errors: true
 
 - block:
-    - name: "Install elasticsearch operator in {{ ocp_project }}"
-      shell: |
-        {{ openshift_cli }} create -n {{ ocp_project }} -f {{ elasticsearch_files_url }}/01-service-account.yaml
-        {{ openshift_cli }} create -n {{ ocp_project }} -f {{ elasticsearch_files_url }}/02-role.yaml
-        {{ openshift_cli }} create -n {{ ocp_project }} -f {{ elasticsearch_files_url }}/03-role-bindings.yaml
-        {{ openshift_cli }} create -n {{ ocp_project }} -f {{ elasticsearch_files_url }}/04-crd.yaml
-        {{ openshift_cli }} create -n {{ ocp_project }} -f {{ elasticsearch_files_url }}/05-deployment.yaml
+  - name: "copy {{ resources_base_dir }}/elasticsearch/subscription.yml"
+    template:
+      src: "{{ resources_base_dir }}/elasticsearch/subscription.yml"
+      dest: "{{ work_dir }}/elasticsearch-subscription.yml"
 
-    - name: "Wait until elasticsearch operator is active in {{ ocp_project }}"
-      shell: "{{ openshift_cli }} get deployment elasticsearch-operator -o template --template={{ json_template }} -n {{ ocp_project }}"
-      vars:
-        json_template: '\{\{.status.readyReplicas\}\}'
-      register: result
-      until: result.stdout == "1"
-      retries: 30
-      delay: 10
-      changed_when: false
+  - name: "Create operatorgroups in {{ ocp_project }}"
+    k8s:
+      state: present
+      namespace: "{{ ocp_project }}"
+      src: "{{ resources_base_dir }}/operatorgroup/operatorgroup.yml"
+
+  - name: "Create elasticsearch subscription"
+    k8s:
+      state: present
+      namespace: "{{ ocp_project }}"
+      src: "{{ work_dir }}/elasticsearch-subscription.yml"
+
+  - name: "Wait until elasticsearch operator is active"
+    shell: "oc get deployment elasticsearch-operator -o template --template={{ json_template }} -n {{ ocp_project }}"
+    vars:
+      json_template: '\{\{.status.readyReplicas\}\}'
+    register: result
+    until: result.stdout == "1"
+    retries: 30
+    delay: 10
+    changed_when: false
 
   when: >
     resource_status.stdout is not defined or 
     resource_status.stdout is none or
     resource_status.stdout != "1"
+
 

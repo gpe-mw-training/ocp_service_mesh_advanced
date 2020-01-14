@@ -10,22 +10,27 @@ cluster_admin_user: opentlc-mgr
 work_dir: /tmp/ocp_service_mesh_advanced
 
 maistra_operator_namespace: istio-operator
-maistra_version: 1.0.1
+maistra_operator_namespace_display_name: "{{ maistra_operator_namespace }}"
+maistra_operator_namespace_desc: "Namespace where service mesh operators reside"
+maistra_version: 1.0.4
+maistra_operator_version_label: "v{{ maistra_version }}"
 
-elasticsearch_version: 4.3
-elesticsearch_namespace: openshift-logging
-elasticsearch_files_url: "https://raw.githubusercontent.com/gpe-mw-training/elasticsearch-operator/{{ elasticsearch_version }}/manifests"
+elasticsearch_operator_namespace: istio-operator
+elasticsearch_operator_namespace_display_name: "{{ elasticsearch_operator_namespace }}"
+elasticsearch_operator_namespace_desc: "Namespace where service mesh operators reside"
+elastic_operator_version_label: "4.1.29-201912230303"
 
-jaeger_namespace: observability
-jaeger_version: v1.13.1
+jaeger_operator_namespace: istio-operator
+jaeger_operator_namespace_display_name: "{{ jaeger_operator_namespace }}"
+jaeger_operator_namespace_desc: "Namespace where service mesh operators reside"
+jaeger_version: 1.13.1
+jaeger_operator_version_label: "v{{ jaeger_version }}"
 
-kiali_version: 1.0.7
-kiali_operator_version_label: "v{{ kiali_version }}"        # Determines URL path to kiali related resources
-kiali_operator_install_script: deploy-kiali-operator.sh
-kiali_operator_install_script_url: "https://raw.githubusercontent.com/kiali/kiali/{{ kiali_operator_version_label }}/operator/deploy/{{ kiali_operator_install_script }}"
-kiali_operator_namespace: openshift-operators
-kiali_operator_image_name: registry.redhat.io/openshift-service-mesh/kiali-rhel7-operator
-kiali_operator_image_version: "{{ kiali_version }}"         # Specifies image tag
+kiali_operator_namespace: istio-operator
+kiali_operator_namespace_display_name: "{{ kiali_operator_namespace }}"
+kiali_operator_namespace_desc: "Namespace where service mesh operators reside"
+kiali_version: 1.0.9
+kiali_operator_version_label: "v{{ kiali_version }}"
 
 replica_status: '\{\{.status.readyReplicas\}\}'
 

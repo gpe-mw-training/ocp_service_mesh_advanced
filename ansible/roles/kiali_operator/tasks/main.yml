@@ -11,13 +11,19 @@
       src: "{{ resources_base_dir }}/kiali/subscription.yml"
       dest: "{{ work_dir }}/kiali-subscription.yml"
 
+  - name: "Create operatorgroups in {{ ocp_project }}"
+    k8s:
+      state: present
+      namespace: "{{ ocp_project }}"
+      src: "{{ resources_base_dir }}/operatorgroup/operatorgroup.yml"
+
   - name: "Create kiali subscription"
     k8s:
       state: present
       namespace: "{{ kiali_operator_namespace }}"
       src: "{{ work_dir }}/kiali-subscription.yml"
 
-  - name: "Wait until service mesh operator is active"
+  - name: "Wait until kiali operator is active"
     shell: "oc get deployment kiali-operator -o template --template={{ json_template }} -n {{ ocp_project }}"
     vars:
       json_template: '\{\{.status.readyReplicas\}\}'
