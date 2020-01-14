@@ -12,9 +12,14 @@
     path: "{{ response_dir }}"
     state: directory
 
-- shell: |
-    oc describe  deploy prod-apicast -n user{{ item }}-gw | grep THREESCALE_PORTAL_ENDPOINT | cut -d'@' -f1 | cut -d'/' -f3
+- shell:
+    oc get secret apicast-configuration-url-secret -n user{{ item }}-gw -o template --template={{ json_template }} | base64 -d | cut -d'@' -f1 | cut -d'/' -f3
+  vars:
+    json_template: '\{\{.data.password\}\}'
   register: tenant_access_token
+
+- debug:
+    var: tenant_access_token
 
 - set_fact:
     output_file: "{{ item }}_list_services.xml"
@@ -166,4 +171,3 @@
       status_code: 200
   when: >
     check_default_api is not failed
-
