@@ -9,7 +9,7 @@ spec:
   istio:
     global:
       mtls: false
-      disablePolicyChecks: false
+      disablePolicyChecks: true
       proxy:
         resources:
           requests:
