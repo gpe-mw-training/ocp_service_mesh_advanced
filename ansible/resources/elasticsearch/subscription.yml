@@ -3,7 +3,7 @@ kind: Subscription
 metadata:
   name: elasticsearch-operator
 spec:
-  channel: preview
+  channel: '4.2'
   installPlanApproval: Automatic
   name: elasticsearch-operator
   source: redhat-operators

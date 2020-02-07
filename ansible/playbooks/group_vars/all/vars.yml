@@ -12,13 +12,13 @@ work_dir: /tmp/ocp_service_mesh_advanced
 maistra_operator_namespace: istio-operator
 maistra_operator_namespace_display_name: "{{ maistra_operator_namespace }}"
 maistra_operator_namespace_desc: "Namespace where service mesh operators reside"
-maistra_version: 1.0.4
+maistra_version: 1.0.6
 maistra_operator_version_label: "v{{ maistra_version }}"
 
 elasticsearch_operator_namespace: istio-operator
 elasticsearch_operator_namespace_display_name: "{{ elasticsearch_operator_namespace }}"
 elasticsearch_operator_namespace_desc: "Namespace where service mesh operators reside"
-elastic_operator_version_label: "4.1.31-202001140447"
+elastic_operator_version_label: "4.2.15-202001171551"
 
 jaeger_operator_namespace: istio-operator
 jaeger_operator_namespace_display_name: "{{ jaeger_operator_namespace }}"
