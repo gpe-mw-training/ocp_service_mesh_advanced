@@ -3,9 +3,9 @@ kind: Subscription
 metadata:
   name: jaeger-product
 spec:
-  channel: stable
+  channel: '{{ jaeger_operator_channel }}'
   installPlanApproval: Automatic
-  name: jaeger-product
-  source: redhat-operators
-  sourceNamespace: openshift-marketplace
-  startingCSV: jaeger-operator.{{ jaeger_operator_version_label }}
+  name: {{ jaeger_operator_package_name }}
+  source: {{ jaeger_operator_catalog_source }}
+  sourceNamespace: {{ jaeger_operator_catalog_source_namespace }}
+  startingCSV: {{ jaeger_operator_startingcsv }}

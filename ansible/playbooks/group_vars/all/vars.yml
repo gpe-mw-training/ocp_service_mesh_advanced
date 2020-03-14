@@ -25,8 +25,9 @@ elasticsearch_operator_package_name: elasticsearch-operator
 jaeger_operator_namespace: istio-operator
 jaeger_operator_namespace_display_name: "{{ jaeger_operator_namespace }}"
 jaeger_operator_namespace_desc: "Namespace where service mesh operators reside"
-jaeger_version: 1.13.1
-jaeger_operator_version_label: "v{{ jaeger_version }}"
+jaeger_operator_catalog_source: redhat-operators
+jaeger_operator_catalog_source_namespace: openshift-marketplace
+jaeger_operator_package_name: jaeger-product
 
 kiali_operator_namespace: istio-operator
 kiali_operator_namespace_display_name: "{{ kiali_operator_namespace }}"
