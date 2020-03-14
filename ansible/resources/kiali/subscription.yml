@@ -3,10 +3,9 @@ kind: Subscription
 metadata:
   name: kiali-ossm
 spec:
-  channel: stable
+  channel: '{{ kiali_operator_channel }}'
   installPlanApproval: Automatic
-  name: kiali-ossm
-  source: redhat-operators
-  sourceNamespace: openshift-marketplace
-  startingCSV: kiali-operator.{{ kiali_operator_version_label }}
-
+  name: {{ kiali_operator_package_name }}
+  source: {{ kiali_operator_catalog_source }}
+  sourceNamespace: {{ kiali_operator_catalog_source_namespace }}
+  startingCSV: {{ kiali_operator_startingcsv }}

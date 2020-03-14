@@ -32,8 +32,9 @@ jaeger_operator_package_name: jaeger-product
 kiali_operator_namespace: istio-operator
 kiali_operator_namespace_display_name: "{{ kiali_operator_namespace }}"
 kiali_operator_namespace_desc: "Namespace where service mesh operators reside"
-kiali_version: 1.0.11
-kiali_operator_version_label: "v{{ kiali_version }}"
+kiali_operator_catalog_source: redhat-operators
+kiali_operator_catalog_source_namespace: openshift-marketplace
+kiali_operator_package_name: kiali-ossm
 
 replica_status: '\{\{.status.readyReplicas\}\}'
 
