@@ -18,7 +18,9 @@ maistra_operator_version_label: "v{{ maistra_version }}"
 elasticsearch_operator_namespace: istio-operator
 elasticsearch_operator_namespace_display_name: "{{ elasticsearch_operator_namespace }}"
 elasticsearch_operator_namespace_desc: "Namespace where service mesh operators reside"
-elastic_operator_version_label: "4.2.22-202003020552"
+elasticsearch_operator_catalog_source: redhat-operators
+elasticsearch_operator_catalog_source_namespace: openshift-marketplace
+elasticsearch_operator_package_name: elasticsearch-operator
 
 jaeger_operator_namespace: istio-operator
 jaeger_operator_namespace_display_name: "{{ jaeger_operator_namespace }}"

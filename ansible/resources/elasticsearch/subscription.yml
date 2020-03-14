@@ -3,10 +3,10 @@ kind: Subscription
 metadata:
   name: elasticsearch-operator
 spec:
-  channel: '4.2'
+  channel: '{{ elasticsearch_operator_channel }}'
   installPlanApproval: Automatic
-  name: elasticsearch-operator
-  source: redhat-operators
-  sourceNamespace: openshift-marketplace
-  startingCSV: elasticsearch-operator.{{ elastic_operator_version_label }}
+  name: {{ elasticsearch_operator_package_name }}
+  source: {{ elasticsearch_operator_catalog_source }}
+  sourceNamespace: {{ elasticsearch_operator_catalog_source_namespace }}
+  startingCSV: {{ elasticsearch_operator_startingcsv }}
 
