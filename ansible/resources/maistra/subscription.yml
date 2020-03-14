@@ -3,9 +3,9 @@ kind: Subscription
 metadata:
   name: servicemeshoperator
 spec:
-  channel: '1.0'
+  channel: '{{ maistra_operator_channel }}'
   installPlanApproval: Automatic
-  name: servicemeshoperator
-  source: redhat-operators
-  sourceNamespace: openshift-marketplace
-  startingCSV: servicemeshoperator.{{ maistra_operator_version_label }}
+  name: {{ maistra_operator_package_name }}
+  source: {{ maistra_operator_catalog_source }}
+  sourceNamespace: {{ maistra_operator_catalog_source_namespace }}
+  startingCSV: {{ maistra_operator_startingcsv }}

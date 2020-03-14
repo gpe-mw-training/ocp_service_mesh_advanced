@@ -12,25 +12,30 @@ work_dir: /tmp/ocp_service_mesh_advanced
 maistra_operator_namespace: istio-operator
 maistra_operator_namespace_display_name: "{{ maistra_operator_namespace }}"
 maistra_operator_namespace_desc: "Namespace where service mesh operators reside"
-maistra_version: 1.0.9
-maistra_operator_version_label: "v{{ maistra_version }}"
+maistra_operator_catalog_source: redhat-operators
+maistra_operator_catalog_source_namespace: openshift-marketplace
+maistra_operator_package_name: servicemeshoperator
 
 elasticsearch_operator_namespace: istio-operator
 elasticsearch_operator_namespace_display_name: "{{ elasticsearch_operator_namespace }}"
 elasticsearch_operator_namespace_desc: "Namespace where service mesh operators reside"
-elastic_operator_version_label: "4.2.22-202003020552"
+elasticsearch_operator_catalog_source: redhat-operators
+elasticsearch_operator_catalog_source_namespace: openshift-marketplace
+elasticsearch_operator_package_name: elasticsearch-operator
 
 jaeger_operator_namespace: istio-operator
 jaeger_operator_namespace_display_name: "{{ jaeger_operator_namespace }}"
 jaeger_operator_namespace_desc: "Namespace where service mesh operators reside"
-jaeger_version: 1.13.1
-jaeger_operator_version_label: "v{{ jaeger_version }}"
+jaeger_operator_catalog_source: redhat-operators
+jaeger_operator_catalog_source_namespace: openshift-marketplace
+jaeger_operator_package_name: jaeger-product
 
 kiali_operator_namespace: istio-operator
 kiali_operator_namespace_display_name: "{{ kiali_operator_namespace }}"
 kiali_operator_namespace_desc: "Namespace where service mesh operators reside"
-kiali_version: 1.0.11
-kiali_operator_version_label: "v{{ kiali_version }}"
+kiali_operator_catalog_source: redhat-operators
+kiali_operator_catalog_source_namespace: openshift-marketplace
+kiali_operator_package_name: kiali-ossm
 
 replica_status: '\{\{.status.readyReplicas\}\}'
 
