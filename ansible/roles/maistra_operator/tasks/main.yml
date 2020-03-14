@@ -6,10 +6,24 @@
   ignore_errors: true
 
 - block:
+
+  - name: get default channel for maistra operator
+    shell: |-
+      oc get packagemanifests {{ maistra_operator_package_name }} -o jsonpath='{.status.defaultChannel}'
+    register: maistra_defaultchannel
+
+  - name: get currentCSV for default channel
+    shell: |-
+      oc get packagemanifests {{ maistra_operator_package_name }} -o jsonpath='{.status.channels[?(@.name == "{{ maistra_defaultchannel.stdout }}")].currentCSV}'
+    register: maistra_currentCSV
+
   - name: "copy {{ resources_base_dir }}/maistra/subscription.yml"
     template:
       src: "{{ resources_base_dir }}/maistra/subscription.yml"
       dest: "{{ work_dir }}/maistra-subscription.yml"
+    vars:
+      maistra_operator_channel: "{{ maistra_defaultchannel.stdout }}"
+      maistra_operator_startingcsv: "{{ maistra_currentCSV.stdout }}" 
 
   - name: "Create operatorgroups in {{ ocp_project }}"
     k8s:
