@@ -8,7 +8,9 @@ spec:
 
   istio:
     global:
-      mtls: false
+      mtls: 
+        enabled: false
+        auto: true
       disablePolicyChecks: true
       proxy:
         resources:
