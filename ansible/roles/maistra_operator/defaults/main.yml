@@ -8,4 +8,4 @@ ocp_project_desc: "{{ maistra_operator_namespace_desc }}"
 project_admin: "{{ cluster_admin_user }}"
 
 
-istio_operator_resource_url: https://raw.githubusercontent.com/Maistra/istio-operator/maistra-1.0.1/deploy/servicemesh-operator.yaml
+istio_operator_resource_url: https://raw.githubusercontent.com/Maistra/istio-operator/maistra-1.1.1/deploy/servicemesh-operator.yaml
