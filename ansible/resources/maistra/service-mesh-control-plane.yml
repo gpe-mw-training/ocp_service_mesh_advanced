@@ -10,7 +10,7 @@ spec:
     global:
       mtls: 
         enabled: false
-        auto: true
+        auto: false
       disablePolicyChecks: true
       proxy:
         resources:
