@@ -5,25 +5,29 @@
   register: resource_status
   ignore_errors: true
 
+- name: get default channel for jaeger operator
+  shell: |-
+    oc get packagemanifests {{ jaeger_operator_package_name }} -o jsonpath='{.status.defaultChannel}'
+  register: jaeger_defaultchannel
+
+- name: get currentCSV for default channel
+  shell: |-
+    oc get packagemanifests {{ jaeger_operator_package_name }} -o jsonpath='{.status.channels[?(@.name == "{{ jaeger_defaultchannel.stdout }}")].currentCSV}'
+  register: jaeger_currentCSV
+
+- name: set Jaeger startingCSV
+  set_fact:
+    jaeger_operator_startingcsv: "{{ jaeger_currentCSV.stdout }}" 
+
+- name: set Jaeger operator channel
+  set_fact:
+    jaeger_operator_channel: "{{ jaeger_defaultchannel.stdout }}"
+
 - block:
-
-  - name: get default channel for jaeger operator
-    shell: |-
-      oc get packagemanifests {{ jaeger_operator_package_name }} -o jsonpath='{.status.defaultChannel}'
-    register: jaeger_defaultchannel
-
-  - name: get currentCSV for default channel
-    shell: |-
-      oc get packagemanifests {{ jaeger_operator_package_name }} -o jsonpath='{.status.channels[?(@.name == "{{ jaeger_defaultchannel.stdout }}")].currentCSV}'
-    register: jaeger_currentCSV
-
   - name: "copy {{ resources_base_dir }}/jaeger/subscription.yml"
     template:
       src: "{{ resources_base_dir }}/jaeger/subscription.yml"
       dest: "{{ work_dir }}/jaeger-subscription.yml"
-    vars:
-      jaeger_operator_channel: "{{ jaeger_defaultchannel.stdout }}"
-      jaeger_operator_startingcsv: "{{ jaeger_currentCSV.stdout }}" 
 
   - name: "Create operatorgroups in {{ ocp_project }}"
     k8s:

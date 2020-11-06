@@ -1,4 +1,63 @@
 ---
+- name: Wait for ES operator to be available in project
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    name: "{{ elasticsearch_operator_startingcsv }}"
+    namespace: "{{ ocp_project }}"
+  register: es_csv_check
+  retries: 30
+  delay: 20
+  until:
+  - es_csv_check.resources | length > 0
+  - es_csv_check.resources[0].status is defined
+  - es_csv_check.resources[0].status.phase is defined
+  - es_csv_check.resources[0].status.phase == "Succeeded"
+
+- name: Wait for Jaeger operator to be available in project
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    name: "{{ jaeger_operator_startingcsv }}"
+    namespace: "{{ ocp_project }}"
+  register: jaeger_csv_check
+  retries: 30
+  delay: 20
+  until:
+  - jaeger_csv_check.resources | length > 0
+  - jaeger_csv_check.resources[0].status is defined
+  - jaeger_csv_check.resources[0].status.phase is defined
+  - jaeger_csv_check.resources[0].status.phase == "Succeeded"
+
+- name: Wait for Kiali operator to be available in project
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    name: "{{ kiali_operator_startingcsv }}"
+    namespace: "{{ ocp_project }}"
+  register: kiali_csv_check
+  retries: 30
+  delay: 20
+  until:
+  - kiali_csv_check.resources | length > 0
+  - kiali_csv_check.resources[0].status is defined
+  - kiali_csv_check.resources[0].status.phase is defined
+  - kiali_csv_check.resources[0].status.phase == "Succeeded"
+
+- name: Wait for Maistra operator to be available in project
+  k8s_info:
+    api_version: operators.coreos.com/v1alpha1
+    kind: ClusterServiceVersion
+    name: "{{ maistra_operator_startingcsv }}"
+    namespace: "{{ ocp_project }}"
+  register: maistra_csv_check
+  retries: 30
+  delay: 20
+  until:
+  - maistra_csv_check.resources | length > 0
+  - maistra_csv_check.resources[0].status is defined
+  - maistra_csv_check.resources[0].status.phase is defined
+  - maistra_csv_check.resources[0].status.phase == "Succeeded"
 
 - name: "Install maistra control_plane in {{ ocp_project }}"
   shell: |
