@@ -16,14 +16,19 @@
     shell: |-
       oc get packagemanifests {{ elasticsearch_operator_package_name }} -o jsonpath='{.status.channels[?(@.name == "{{ es_defaultchannel.stdout }}")].currentCSV}'
     register: es_currentCSV
+  
+  - name: set ES startingCSV
+    set_fact:
+      elasticsearch_operator_startingcsv: "{{ es_currentCSV.stdout }}"
+
+  - name: set ES operator channel
+    set_fact:
+      elasticsearch_operator_channel: "{{ es_defaultchannel.stdout }}"
 
   - name: "copy {{ resources_base_dir }}/elasticsearch/subscription.yml"
     template:
       src: "{{ resources_base_dir }}/elasticsearch/subscription.yml"
       dest: "{{ work_dir }}/elasticsearch-subscription.yml"
-    vars:
-      elasticsearch_operator_channel: "{{ es_defaultchannel.stdout }}"
-      elasticsearch_operator_startingcsv: "{{ es_currentCSV.stdout }}"  
 
   - name: "Create operatorgroups in {{ ocp_project }}"
     k8s:

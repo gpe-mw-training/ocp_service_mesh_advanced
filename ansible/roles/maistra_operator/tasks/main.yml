@@ -17,13 +17,18 @@
       oc get packagemanifests {{ maistra_operator_package_name }} -o jsonpath='{.status.channels[?(@.name == "{{ maistra_defaultchannel.stdout }}")].currentCSV}'
     register: maistra_currentCSV
 
+  - name: set Maistra startingCSV
+    set_fact:
+      maistra_operator_startingcsv: "{{ maistra_currentCSV.stdout }}" 
+
+  - name: set Maistra operator channel
+    set_fact:
+      maistra_operator_channel: "{{ maistra_defaultchannel.stdout }}"
+
   - name: "copy {{ resources_base_dir }}/maistra/subscription.yml"
     template:
       src: "{{ resources_base_dir }}/maistra/subscription.yml"
       dest: "{{ work_dir }}/maistra-subscription.yml"
-    vars:
-      maistra_operator_channel: "{{ maistra_defaultchannel.stdout }}"
-      maistra_operator_startingcsv: "{{ maistra_currentCSV.stdout }}" 
 
   - name: "Create operatorgroups in {{ ocp_project }}"
     k8s:
