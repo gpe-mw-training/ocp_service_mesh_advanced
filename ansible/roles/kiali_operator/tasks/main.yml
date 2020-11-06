@@ -5,26 +5,25 @@
   register: resource_status
   ignore_errors: true
 
+- name: get default channel for kiali operator
+  shell: |-
+    oc get packagemanifests {{ kiali_operator_package_name }} -o jsonpath='{.status.defaultChannel}'
+  register: kiali_defaultchannel
+
+- name: get currentCSV for default channel
+  shell: |-
+    oc get packagemanifests {{ kiali_operator_package_name }} -o jsonpath='{.status.channels[?(@.name == "{{ kiali_defaultchannel.stdout }}")].currentCSV}'
+  register: kiali_currentCSV
+
+- name: set Kiali startingCSV
+  set_fact:
+    kiali_operator_startingcsv: "{{ kiali_currentCSV.stdout }}" 
+
+- name: set Kiali operator channel
+  set_fact:
+    kiali_operator_channel: "{{ kiali_defaultchannel.stdout }}"
+
 - block:
-
-  - name: get default channel for kiali operator
-    shell: |-
-      oc get packagemanifests {{ kiali_operator_package_name }} -o jsonpath='{.status.defaultChannel}'
-    register: kiali_defaultchannel
-
-  - name: get currentCSV for default channel
-    shell: |-
-      oc get packagemanifests {{ kiali_operator_package_name }} -o jsonpath='{.status.channels[?(@.name == "{{ kiali_defaultchannel.stdout }}")].currentCSV}'
-    register: kiali_currentCSV
-  
-  - name: set Kiali startingCSV
-    set_fact:
-      kiali_operator_startingcsv: "{{ kiali_currentCSV.stdout }}" 
-
-  - name: set Kiali operator channel
-    set_fact:
-      kiali_operator_channel: "{{ kiali_defaultchannel.stdout }}"
-
   - name: "copy {{ resources_base_dir }}/kiali/subscription.yml"
     template:
       src: "{{ resources_base_dir }}/kiali/subscription.yml"
