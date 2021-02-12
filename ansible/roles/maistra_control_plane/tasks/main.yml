@@ -64,7 +64,7 @@
     {{ openshift_cli }} apply -f {{ resources_base_dir }}/maistra/service-mesh-control-plane.yml -n {{ ocp_project }}
 
 - name: "Wait until service mesh control plane is active; {{ ocp_project }}"
-  shell: "{{ openshift_cli }} get deployment istio-pilot -o template --template={{ json_template }} -n {{ ocp_project }}"
+  shell: "{{ openshift_cli }} get deployment istiod-full-install -o template --template={{ json_template }} -n {{ ocp_project }}"
   vars:
     json_template: '\{\{.status.readyReplicas\}\}'
   register: result
