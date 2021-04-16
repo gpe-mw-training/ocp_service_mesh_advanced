@@ -1,49 +1,73 @@
-apiVersion: maistra.io/v1
+apiVersion: maistra.io/v2
 kind: ServiceMeshControlPlane
 metadata:
   name: full-install
 spec:
-  version: v1.1
-  threeScale:
-    enabled: false
-  istio:
-    global:
-      mtls: 
-        enabled: false
-        auto: false
-      disablePolicyChecks: true
-      proxy:
-        resources:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-          limits:
-            cpu: 500m
-            memory: 128Mi
-    gateways:
-      istio-egressgateway:
-        autoscaleEnabled: false
-      istio-ingressgateway:
-        autoscaleEnabled: false
-        ior_enabled: false
+  addons:
+    3scale:
+      enabled: false
+    kiali: {}
+  gateways:
+    egress:
+      runtime:
+        deployment:
+          autoScaling:
+            enabled: false
+      service: {}
+    ingress:
+      runtime:
+        deployment:
+          autoScaling:
+            enabled: false
+      service: {}
+    openshiftRoute:
+      enabled: false
+  policy:
     mixer:
-      policy:
-        autoscaleEnabled: false
-      telemetry:
-        autoscaleEnabled: false
+      enableChecks: false
+  profiles:
+  - default
+  proxy:
+    runtime:
+      container:
         resources:
-          requests:
-            cpu: 100m
-            memory: 1G
           limits:
             cpu: 500m
-            memory: 4G
-    pilot:
-      autoscaleEnabled: false
-      traceSampling: 100.0
+            memory: 128Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+  runtime:
+    components:
+      mixer.policy:
+        deployment:
+          autoScaling:
+            enabled: false
+      mixer.telemetry:
+        container:
+          resources:
+            limits:
+              cpu: 500m
+              memory: 4G
+            requests:
+              cpu: 100m
+              memory: 1G
+        deployment:
+          autoScaling:
+            enabled: false
+      pilot:
+        deployment:
+          autoScaling:
+            enabled: false
+  security:
+    dataPlane:
+      automtls: false
+      mtls: false
+  techPreview:
     kiali:
       dashboard:
-        user: admin
         passphrase: redhat
-    tracing:
-      enabled: true
+        user: admin
+  tracing:
+    sampling: 10000
+    type: Jaeger
